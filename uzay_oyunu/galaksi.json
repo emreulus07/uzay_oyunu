@@ -1,0 +1,27 @@
+
+{
+  "gezegenler": [
+    {
+      "ad": "Dunya",
+      "tehlike": 1,
+      "odul": 100
+    },
+    {
+      "ad": "Mars",
+      "tehlike": 3,
+      "odul": 250
+    },
+    {
+      "ad": "Jupiter",
+      "tehlike": 5,
+      "odul": 500
+    }
+  ],
+  "baglantilar": {
+    "Dunya": ["Mars"],
+    "Mars": ["Dunya", "Jupiter"],
+    "Jupiter": ["Mars"]
+  },
+  "baslangic": "Dunya",
+  "yakit": 50
+}

@@ -27,3 +27,11 @@ def hedef_menusu(hedefler: list[str]) -> str:
         metin = metin + "\n[" + str(numara) + "] " + gezegen
 
     return metin
+
+def travel(bulundugun_gezegen, hedef, baglantilar):
+    gidilebilecek_yerler = baglantilar.get(bulundugun_gezegen, [])
+
+    if hedef in gidilebilecek_yerler:
+        return hedef
+
+    raise ValueError("Bu gezegene doğrudan gidemezsin")
