@@ -49,7 +49,7 @@ def oyun_baslat():
     print("--------------------------")
 
     veriler = galaksi_yukle()
-    galaksi = galaksi_kur(veriler)
+    galaksi = galaksi_kur(**veriler)
 
     bulunan_gezegen = galaksi["baslangic"]
     baglantilar = galaksi["baglantilar"]

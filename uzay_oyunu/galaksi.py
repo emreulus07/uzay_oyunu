@@ -1,8 +1,10 @@
+
 import json
 from pathlib import Path
 
 
-def galaksi_yukle():
+def galaksi_yukle() -> dict:
+    """Galaksi bilgilerini JSON dosyasından okur."""
     dosya = Path(__file__).parent / "galaksi.json"
 
     with open(dosya, "r", encoding="utf-8") as f:
@@ -10,21 +12,29 @@ def galaksi_yukle():
 
     return veriler
 
-    
-def galaksi_kur(veriler):
-    gezegenler = veriler["gezegenler"]
-    baglantilar = veriler["baglantilar"]
-    baslangic = veriler["baslangic"]
-    yakit = veriler.get("yakit", 50)
 
-    gezegen_adlari = [gezegen["ad"] for gezegen in gezegenler]
+def galaksi_kur(
+    gezegenler: list,
+    baglantilar: dict,
+    baslangic: str,
+    **kwargs
+) -> dict:
+    """Gezegen bilgilerini kontrol ederek galaksi oluşturur."""
+
+    gezegen_adlari = [
+        gezegen["ad"] if isinstance(gezegen, dict) else gezegen
+        for gezegen in gezegenler
+    ]
 
     if baslangic not in gezegen_adlari:
         raise ValueError("Başlangıç gezegeni bulunamadı")
+
+    yakit = kwargs.get("yakit", 50)
 
     return {
         "gezegenler": gezegenler,
         "baglantilar": baglantilar,
         "baslangic": baslangic,
+        "konum": baslangic,
         "yakit": yakit
     }
