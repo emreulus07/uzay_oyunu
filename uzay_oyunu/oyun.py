@@ -28,7 +28,9 @@ def hedef_menusu(hedefler: list[str]) -> str:
 
     return metin
 
-def travel(bulundugun_gezegen, hedef, baglantilar):
+def travel(bulundugun_gezegen: str, hedef: str, baglantilar: dict) -> str:
+    """İki gezegen arasında doğrudan bağlantı olup olmadığını kontrol eder."""
+
     gidilebilecek_yerler = baglantilar.get(bulundugun_gezegen, [])
 
     if hedef in gidilebilecek_yerler:

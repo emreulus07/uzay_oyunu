@@ -28,3 +28,13 @@ def test_gorev_kaydi():
     assert "1. Kredi kazan" in sonuc
     assert "2. Pilot bul" in sonuc
     assert "sorumlu: Ayşe" in sonuc
+    
+def test_travel():
+    from uzay_oyunu.oyun import travel
+    from uzay_oyunu.galaksi import galaksi_yukle
+
+    veri = galaksi_yukle()
+    baglantilar = veri["baglantilar"]
+
+    assert travel("Dunya", "Mars", baglantilar) == "Mars"
+    assert travel("Mars", "Jupiter", baglantilar) == "Jupiter"
