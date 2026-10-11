@@ -1,4 +1,4 @@
-
+from uzay_oyunu.araclar import hamle_sayaci
 from typing import List
 
 
@@ -62,6 +62,8 @@ def oyun_baslat():
     for gezegen in galaksi["gezegenler"]:
         print("-", gezegen["ad"])
 
+    sayac = hamle_sayaci()
+    toplam_hamle = 0
     while True:
         print("\n--------------------------")
         print("Bulunduğun gezegen:", bulunan_gezegen)
@@ -100,11 +102,12 @@ def oyun_baslat():
 
         bulunan_gezegen = travel(bulunan_gezegen, secim, baglantilar)
         galaksi["yakit"] = galaksi["yakit"] - 10
+        toplam_hamle = sayac()
 
         print("\nYolculuk başarılı!")
         print("Yeni gezegenin:", bulunan_gezegen)
         print("Kalan yakıt:", galaksi["yakit"])
 
-
+    print(f"Oyunu {toplam_hamle} hamlede bitirdin!")
 if __name__ == "__main__":
     oyun_baslat()
