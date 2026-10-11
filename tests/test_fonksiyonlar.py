@@ -11,3 +11,20 @@ def test_envanter_metni():
 def test_hedef_menusu():
     sonuc = hedef_menusu(["centauri", "sirius"])
     assert sonuc == "Nereye gitmek istersin?\n[1] centauri\n[2] sirius"
+
+from uzay_oyunu.kayit import gorev_kaydi
+
+
+def test_gorev_kaydi():
+    sonuc = gorev_kaydi(
+        "Kara deliğe atla",
+        "Kredi kazan",
+        "Pilot bul",
+        oncelik="yüksek",
+        sorumlu="Ayşe"
+    )
+
+    assert "[YÜKSEK] Kara deliğe atla" in sonuc
+    assert "1. Kredi kazan" in sonuc
+    assert "2. Pilot bul" in sonuc
+    assert "sorumlu: Ayşe" in sonuc
