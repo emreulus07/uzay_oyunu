@@ -1,5 +1,10 @@
-from uzay_oyunu.araclar import hamle_sayaci
+
 from typing import List
+
+from uzay_oyunu.araclar import hamle_sayaci
+from uzay_oyunu.akis import yakit_gostergesi
+from uzay_oyunu.galaksi import galaksi_yukle, galaksi_kur
+from uzay_oyunu.tuzaklar import yakit_ekle
 
 
 def envanter_metni(credits: bool, engines: bool, copilot: bool) -> str:
@@ -26,7 +31,7 @@ def hedef_menusu(hedefler: List[str]) -> str:
     metin = "Nereye gitmek istersin?"
 
     for numara, gezegen in enumerate(hedefler, 1):
-        metin = metin + "\n[" + str(numara) + "] " + gezegen
+        metin += "\n[" + str(numara) + "] " + gezegen
 
     return metin
 
@@ -41,9 +46,8 @@ def travel(bulundugun_gezegen: str, hedef: str, baglantilar: dict) -> str:
     raise ValueError("Bu gezegene doğrudan gidemezsin")
 
 
-def oyun_baslat():
-    from uzay_oyunu.galaksi import galaksi_yukle, galaksi_kur
-    from uzay_oyunu.tuzaklar import yakit_ekle
+def oyun_baslat() -> None:
+    """Uzay oyununu başlatır, yakıtı ve hamleleri takip eder."""
 
     print("UZAY MACERASINA HOŞ GELDİN!")
     print("--------------------------")
@@ -54,6 +58,14 @@ def oyun_baslat():
     bulunan_gezegen = galaksi["baslangic"]
     baglantilar = galaksi["baglantilar"]
 
+    # Yeni yakıt göstergesi
+    tuketim = 5
+    gosterge = yakit_gostergesi(galaksi["yakit"], tuketim)
+
+    # Önceki ödevin hamle sayacı
+    sayac = hamle_sayaci()
+    toplam_hamle = 0
+
     print("Başlangıç gezegeni:", bulunan_gezegen)
     print("Başlangıç yakıtı:", galaksi["yakit"])
 
@@ -62,16 +74,14 @@ def oyun_baslat():
     for gezegen in galaksi["gezegenler"]:
         print("-", gezegen["ad"])
 
-    sayac = hamle_sayaci()
-    toplam_hamle = 0
     while True:
         print("\n--------------------------")
         print("Bulunduğun gezegen:", bulunan_gezegen)
         print("Kalan yakıt:", galaksi["yakit"])
 
-        print("\nGidebileceğin gezegenler:")
-
         hedefler = baglantilar.get(bulunan_gezegen, [])
+
+        print("\nGidebileceğin gezegenler:")
 
         for hedef in hedefler:
             print("-", hedef)
@@ -79,7 +89,7 @@ def oyun_baslat():
         print("- cikis")
         print("- yakit")
 
-        secim = input("\nHangi gezegene gitmek istiyorsun? ")
+        secim = input("\nHangi gezegene gitmek istiyorsun? ").strip()
 
         if secim == "cikis":
             print("Uzay macerası sona erdi!")
@@ -88,6 +98,10 @@ def oyun_baslat():
         if secim == "yakit":
             depo = yakit_ekle(20)
             galaksi["yakit"] += depo[0]
+
+            # Yakıt eklendiğinde göstergeyi güncelle
+            gosterge = yakit_gostergesi(galaksi["yakit"], tuketim)
+
             print("20 yakıt eklendi!")
             print("Güncel yakıt:", galaksi["yakit"])
             continue
@@ -96,18 +110,38 @@ def oyun_baslat():
             print("Bu gezegene doğrudan gidemezsin!")
             continue
 
-        if galaksi["yakit"] < 10:
-            print("Yetersiz yakıt! Yolculuk yapılamadı.")
+        # Yakıt bitmişse yolculuk yapılamaz
+        if galaksi["yakit"] <= 0:
+            print("Yakıtın bitti, uzayda sürükleniyorsun…")
             break
 
-        bulunan_gezegen = travel(bulunan_gezegen, secim, baglantilar)
-        galaksi["yakit"] = galaksi["yakit"] - 10
+        # Her başarılı yolculuk için göstergeden değer al
+        try:
+            kalan_yakit = next(gosterge)
+        except StopIteration:
+            print("Yakıtın bitti, uzayda sürükleniyorsun…")
+            break
+
+        galaksi["yakit"] = kalan_yakit
+
+        bulunan_gezegen = travel(
+            bulunan_gezegen,
+            secim,
+            baglantilar
+        )
+
         toplam_hamle = sayac()
 
         print("\nYolculuk başarılı!")
         print("Yeni gezegenin:", bulunan_gezegen)
         print("Kalan yakıt:", galaksi["yakit"])
 
+        if galaksi["yakit"] == 0:
+            print("Yakıtın bitti, uzayda sürükleniyorsun…")
+            break
+
     print(f"Oyunu {toplam_hamle} hamlede bitirdin!")
+
+
 if __name__ == "__main__":
     oyun_baslat()
