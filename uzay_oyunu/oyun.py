@@ -1,6 +1,6 @@
 
 from typing import List
-
+from uzay_oyunu.dekoratorler import log_cagri
 from uzay_oyunu.araclar import hamle_sayaci
 from uzay_oyunu.akis import yakit_gostergesi
 from uzay_oyunu.galaksi import galaksi_yukle, galaksi_kur
@@ -25,7 +25,7 @@ def envanter_metni(credits: bool, engines: bool, copilot: bool) -> str:
 
     return ""
 
-
+@log_cagri
 def hedef_menusu(hedefler: List[str]) -> str:
     """Gidilebilecek gezegenleri numaralı menü olarak döndürür."""
     metin = "Nereye gitmek istersin?"

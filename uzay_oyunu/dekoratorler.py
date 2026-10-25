@@ -53,3 +53,17 @@ def fib_cache_ustte(n: int) -> int:
     if n < 2:
         return n
     return fib_cache_ustte(n - 1) + fib_cache_ustte(n - 2)
+
+def log_cagri(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        parametreler = [repr(a) for a in args]
+        parametreler += [f"{k}={v!r}" for k, v in kwargs.items()]
+
+        print(f"-> {func.__name__}({', '.join(parametreler)})")
+        sonuc = func(*args, **kwargs)
+        print(f"<- {func.__name__} = {sonuc!r}")
+
+        return sonuc
+
+    return wrapper
