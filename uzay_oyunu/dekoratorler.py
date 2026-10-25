@@ -99,3 +99,33 @@ def yakit_harca(miktar):
 def yakit_harca(miktar):
     """100 birimlik depodan yakıt harcar."""
     return 100 - miktar
+    
+def hafiza(maxsize=None):
+    """Sonuçları sözlükte saklayan önbellek dekoratörü."""
+    def dekorator(func):
+        onbellek = {}
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            anahtar = (
+                args,
+                tuple(sorted(kwargs.items()))
+            )
+
+            if anahtar in onbellek:
+                return onbellek[anahtar]
+
+            sonuc = func(*args, **kwargs)
+
+            if maxsize != 0:
+                if maxsize is not None and len(onbellek) >= maxsize:
+                    ilk_anahtar = next(iter(onbellek))
+                    del onbellek[ilk_anahtar]
+
+                onbellek[anahtar] = sonuc
+
+            return sonuc
+
+        return wrapper
+
+    return dekorator

@@ -139,3 +139,48 @@ def test_yakit_harca_hatali():
 
 def test_yakit_harca_keyword():
     assert yakit_harca(miktar=25) == 75
+
+from functools import lru_cache
+from uzay_oyunu.dekoratorler import hafiza
+
+
+def test_hafiza_onbellek():
+    cagri = [0]
+
+    @hafiza()
+    def kare(sayi):
+        cagri[0] += 1
+        return sayi * sayi
+
+    assert kare(5) == 25
+    assert kare(5) == 25
+    assert cagri[0] == 1
+
+
+def test_hafiza_kapasite():
+    cagri = [0]
+
+    @hafiza(maxsize=2)
+    def kare(sayi):
+        cagri[0] += 1
+        return sayi * sayi
+
+    kare(1)
+    kare(2)
+    kare(3)
+    kare(1)
+
+    assert cagri[0] == 4
+
+
+def test_hafiza_lru_cache_karsilastirma():
+    @hafiza()
+    def kare_ozel(sayi):
+        return sayi * sayi
+
+    @lru_cache(maxsize=None)
+    def kare_lru(sayi):
+        return sayi * sayi
+
+    for sayi in range(10):
+        assert kare_ozel(sayi) == kare_lru(sayi)
