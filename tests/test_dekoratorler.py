@@ -66,3 +66,53 @@ def test_galaksi_kur_log(capsys):
     assert sonuc["baslangic"] == "Dunya"
     assert "-> galaksi_kur(" in cikti
     assert "<- galaksi_kur =" in cikti
+
+import pytest
+from uzay_oyunu.komutlar import KOMUTLAR, komut
+
+
+def test_yardim_komutu():
+    durum = {}
+    fonksiyon, aciklama = KOMUTLAR["yardim"]
+    sonuc = fonksiyon(durum)
+
+    assert "yardim" in sonuc
+    assert "envanter" in sonuc
+    assert "harita" in sonuc
+
+
+def test_envanter_komutu():
+    durum = {
+        "credits": True,
+        "engines": True,
+        "copilot": False
+    }
+
+    fonksiyon, aciklama = KOMUTLAR["envanter"]
+    sonuc = fonksiyon(durum)
+
+    assert "bol kredi" in sonuc
+    assert "güçlü motorlar" in sonuc
+
+
+def test_harita_komutu():
+    durum = {
+        "konum": "Dunya",
+        "baglantilar": {
+            "Dunya": ["Mars"],
+            "Mars": []
+        }
+    }
+
+    fonksiyon, aciklama = KOMUTLAR["harita"]
+    sonuc = fonksiyon(durum)
+
+    assert "Dunya" in sonuc
+    assert "Mars" in sonuc
+
+
+def test_ayni_komut_iki_kez_eklenemez():
+    with pytest.raises(ValueError):
+        @komut("yardim")
+        def tekrar(durum):
+            return "Tekrar"
