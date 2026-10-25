@@ -19,3 +19,23 @@ def test_zaman_olc_fonksiyon_adi():
         return "tamam"
 
     assert ornek.__name__ == "ornek"
+
+from uzay_oyunu.dekoratorler import (
+    fib_sadece_say,
+    fib_say_ustte,
+    fib_cache_ustte,
+)
+
+
+def test_fibonacci_dekorator_sirasi():
+    """Üç yöntemin de Fibonacci sonucu aynı olmalı."""
+    assert fib_sadece_say(20) == 6765
+    assert fib_say_ustte(20) == 6765
+    assert fib_cache_ustte(20) == 6765
+
+
+def test_fibonacci_cagri_sayilari():
+    """Dekoratör sırası çağrı sayısını değiştirmeli."""
+    assert fib_sadece_say.cagri == 21891
+    assert fib_say_ustte.cagri == 39
+    assert fib_cache_ustte.__wrapped__.cagri == 21
