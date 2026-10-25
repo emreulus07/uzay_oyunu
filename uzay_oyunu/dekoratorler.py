@@ -1,25 +1,32 @@
 
 import time
-from functools import wraps
+from functools import wraps, lru_cache
 
 
-def zaman_olc(func):
+# GOREV 1 - SURE OLCME
+
+def sure_olc(func):
+    """Fonksiyonun calisma suresini olcer."""
     @wraps(func)
     def wrapper(*args, **kwargs):
         baslangic = time.perf_counter()
         try:
             return func(*args, **kwargs)
         finally:
-            bitis = time.perf_counter()
-            print(f"{func.__name__} çalışma süresi: {bitis - baslangic:.6f} saniye")
+            sure = time.perf_counter() - baslangic
+            print(f"{func.__name__} çalışma süresi: {sure:.4f} sn")
 
     return wrapper
 
-from functools import lru_cache
 
+# Onceki testlerle uyumluluk
+zaman_olc = sure_olc
+
+
+# GOREV 2 - CAGRI SAYACI
 
 def say(func):
-    """Fonksiyonun kaç kez çağrıldığını sayar."""
+    """Fonksiyonun kac kez cagrildigini sayar."""
     @wraps(func)
     def wrapper(*args, **kwargs):
         wrapper.cagri += 1
@@ -31,7 +38,7 @@ def say(func):
 
 @say
 def fib_sadece_say(n: int) -> int:
-    """Önbelleksiz Fibonacci hesabı."""
+    """Onbelleksiz Fibonacci."""
     if n < 2:
         return n
     return fib_sadece_say(n - 1) + fib_sadece_say(n - 2)
@@ -40,7 +47,7 @@ def fib_sadece_say(n: int) -> int:
 @say
 @lru_cache(maxsize=None)
 def fib_say_ustte(n: int) -> int:
-    """Önbellek içeride, sayaç dışarıda."""
+    """Say disarida, onbellek iceride."""
     if n < 2:
         return n
     return fib_say_ustte(n - 1) + fib_say_ustte(n - 2)
@@ -49,27 +56,38 @@ def fib_say_ustte(n: int) -> int:
 @lru_cache(maxsize=None)
 @say
 def fib_cache_ustte(n: int) -> int:
-    """Önbellek dışarıda, sayaç içeride."""
+    """Onbellek disarida, say iceride."""
     if n < 2:
         return n
     return fib_cache_ustte(n - 1) + fib_cache_ustte(n - 2)
 
+
+# GOREV 3 - FONKSIYON LOGU
+
 def log_cagri(func):
+    """Fonksiyonun giris ve cikis bilgilerini yazdirir."""
     @wraps(func)
     def wrapper(*args, **kwargs):
         parametreler = [repr(a) for a in args]
-        parametreler += [f"{k}={v!r}" for k, v in kwargs.items()]
+        parametreler += [
+            f"{k}={v!r}" for k, v in kwargs.items()
+        ]
 
         print(f"-> {func.__name__}({', '.join(parametreler)})")
+
         sonuc = func(*args, **kwargs)
+
         print(f"<- {func.__name__} = {sonuc!r}")
 
         return sonuc
 
     return wrapper
 
+
+# GOREV 5 - SINIR KONTROLU
+
 def sinirla(alt, ust):
-    """İlk parametrenin belirlenen aralıkta olmasını sağlar."""
+    """Ilk parametreyi verilen aralikta kontrol eder."""
     def dekorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -93,15 +111,14 @@ def sinirla(alt, ust):
 
 @sinirla(0, 100)
 def yakit_harca(miktar):
-    """100 birimlik depodan yakıt harcar."""
+    """100 birimlik depodan yakit harcar."""
     return 100 - miktar
-@sinirla(0, 100)
-def yakit_harca(miktar):
-    """100 birimlik depodan yakıt harcar."""
-    return 100 - miktar
-    
+
+
+# BONUS - KENDI ONBELLEK DEKORATORUMUZ
+
 def hafiza(maxsize=None):
-    """Sonuçları sözlükte saklayan önbellek dekoratörü."""
+    """Sonuclari sozlukte saklayan onbellek dekoratoru."""
     def dekorator(func):
         onbellek = {}
 

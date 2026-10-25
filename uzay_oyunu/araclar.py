@@ -1,3 +1,4 @@
+from uzay_oyunu.dekoratorler import sure_olc
 
 def hamle_sayaci():
     """Her çağrıldığında bir artan sayaç fonksiyonu döndürür."""
@@ -34,6 +35,7 @@ def rota_sayisi(adim: int) -> int:
 
     return rota_sayisi(adim - 1) + rota_sayisi(adim - 2)
 
+@sure_olc
 def rota_sayisi_onbelleksiz(adim: int) -> int:
     """Önbellek kullanmadan rota sayısını hesaplar."""
     if adim < 0:
@@ -70,3 +72,4 @@ def yakit_hesapla(mesafe, katsayi):
 
 
 mars_yakiti = partial(yakit_hesapla, katsayi=2)
+from uzay_oyunu.dekoratorler import sure_olc
