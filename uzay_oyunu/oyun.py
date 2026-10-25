@@ -1,10 +1,12 @@
 
 from typing import List
-from uzay_oyunu.dekoratorler import log_cagri
+
 from uzay_oyunu.araclar import hamle_sayaci
 from uzay_oyunu.akis import yakit_gostergesi
 from uzay_oyunu.galaksi import galaksi_yukle, galaksi_kur
 from uzay_oyunu.tuzaklar import yakit_ekle
+from uzay_oyunu.dekoratorler import log_cagri
+from uzay_oyunu.komutlar import KOMUTLAR
 
 
 def envanter_metni(credits: bool, engines: bool, copilot: bool) -> str:
@@ -24,6 +26,7 @@ def envanter_metni(credits: bool, engines: bool, copilot: bool) -> str:
         return "Sende: " + ", ".join(esyalar)
 
     return ""
+
 
 @log_cagri
 def hedef_menusu(hedefler: List[str]) -> str:
@@ -58,13 +61,19 @@ def oyun_baslat() -> None:
     bulunan_gezegen = galaksi["baslangic"]
     baglantilar = galaksi["baglantilar"]
 
-    # Yeni yakıt göstergesi
     tuketim = 5
     gosterge = yakit_gostergesi(galaksi["yakit"], tuketim)
 
-    # Önceki ödevin hamle sayacı
     sayac = hamle_sayaci()
     toplam_hamle = 0
+
+    durum = {
+        "konum": bulunan_gezegen,
+        "baglantilar": baglantilar,
+        "credits": galaksi.get("credits", False),
+        "engines": galaksi.get("engines", False),
+        "copilot": galaksi.get("copilot", False),
+    }
 
     print("Başlangıç gezegeni:", bulunan_gezegen)
     print("Başlangıç yakıtı:", galaksi["yakit"])
@@ -88,6 +97,9 @@ def oyun_baslat() -> None:
 
         print("- cikis")
         print("- yakit")
+        print("- yardim")
+        print("- envanter")
+        print("- harita")
 
         secim = input("\nHangi gezegene gitmek istiyorsun? ").strip()
 
@@ -99,23 +111,26 @@ def oyun_baslat() -> None:
             depo = yakit_ekle(20)
             galaksi["yakit"] += depo[0]
 
-            # Yakıt eklendiğinde göstergeyi güncelle
             gosterge = yakit_gostergesi(galaksi["yakit"], tuketim)
 
             print("20 yakıt eklendi!")
             print("Güncel yakıt:", galaksi["yakit"])
             continue
 
+        # Hafta 5: Kayıtlı komutları çalıştır
+        if secim in KOMUTLAR:
+            fonksiyon, aciklama = KOMUTLAR[secim]
+            print(fonksiyon(durum))
+            continue
+
         if secim not in hedefler:
             print("Bu gezegene doğrudan gidemezsin!")
             continue
 
-        # Yakıt bitmişse yolculuk yapılamaz
         if galaksi["yakit"] <= 0:
             print("Yakıtın bitti, uzayda sürükleniyorsun…")
             break
 
-        # Her başarılı yolculuk için göstergeden değer al
         try:
             kalan_yakit = next(gosterge)
         except StopIteration:
@@ -130,6 +145,7 @@ def oyun_baslat() -> None:
             baglantilar
         )
 
+        durum["konum"] = bulunan_gezegen
         toplam_hamle = sayac()
 
         print("\nYolculuk başarılı!")

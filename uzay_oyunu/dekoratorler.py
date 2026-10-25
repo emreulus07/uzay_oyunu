@@ -67,3 +67,35 @@ def log_cagri(func):
         return sonuc
 
     return wrapper
+
+def sinirla(alt, ust):
+    """İlk parametrenin belirlenen aralıkta olmasını sağlar."""
+    def dekorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            if args:
+                miktar = args[0]
+            else:
+                miktar = kwargs["miktar"]
+
+            if not alt <= miktar <= ust:
+                raise ValueError(
+                    f"{func.__name__}: {miktar} değeri "
+                    f"{alt}-{ust} aralığında değil"
+                )
+
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return dekorator
+
+
+@sinirla(0, 100)
+def yakit_harca(miktar):
+    """100 birimlik depodan yakıt harcar."""
+    return 100 - miktar
+@sinirla(0, 100)
+def yakit_harca(miktar):
+    """100 birimlik depodan yakıt harcar."""
+    return 100 - miktar

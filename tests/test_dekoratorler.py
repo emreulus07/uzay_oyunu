@@ -116,3 +116,26 @@ def test_ayni_komut_iki_kez_eklenemez():
         @komut("yardim")
         def tekrar(durum):
             return "Tekrar"
+
+from uzay_oyunu.dekoratorler import yakit_harca
+
+
+def test_yakit_harca_normal():
+    assert yakit_harca(30) == 70
+
+
+def test_yakit_harca_sinirlar():
+    assert yakit_harca(0) == 100
+    assert yakit_harca(100) == 0
+
+
+def test_yakit_harca_hatali():
+    with pytest.raises(ValueError):
+        yakit_harca(150)
+
+    with pytest.raises(ValueError):
+        yakit_harca(-5)
+
+
+def test_yakit_harca_keyword():
+    assert yakit_harca(miktar=25) == 75
